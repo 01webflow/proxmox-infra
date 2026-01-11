@@ -12,3 +12,7 @@ vm_base_packages:
   - ca-certificates
   - qemu-guest-agent
 
+# Docker service configuration (optional)
+docker_enabled: false  # Set to true to enable Docker on VMs
+docker_users: []       # List of users to add to docker group (examples only)
+

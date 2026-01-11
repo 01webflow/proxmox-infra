@@ -80,6 +80,7 @@ ansible-playbook -i inventory.yml playbooks/vm-base.yml --limit vms
 - **Target**: `vms` group
 - **Purpose**: Configure Linux VMs
 - **Scope**: Base packages, qemu-guest-agent, timezone, basic SSH safety
+- **Optional roles**: Docker (enabled via `docker_enabled: true`)
 
 ## Roles
 
@@ -91,6 +92,12 @@ ansible-playbook -i inventory.yml playbooks/vm-base.yml --limit vms
 - Creates optional admin user on Proxmox hosts
 - Disabled by default (set `admin_user_enabled: true` to enable)
 
+### `roles/docker/`
+- Installs Docker Engine and docker-compose plugin on VMs
+- Disabled by default (set `docker_enabled: true` in `group_vars/vms.yml` to enable)
+- Adds users to docker group (optional, via `docker_users` variable)
+- Idempotent and distro-aware (Debian/Ubuntu)
+
 ## Variables
 
 ### `group_vars/proxmox_hosts.yml`
@@ -100,6 +107,7 @@ ansible-playbook -i inventory.yml playbooks/vm-base.yml --limit vms
 ### `group_vars/vms.yml`
 - Variables for VM configuration
 - Timezone, base packages list
+- Docker configuration (enabled flag, users list)
 
 ## Usage Examples
 

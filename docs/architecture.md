@@ -256,6 +256,54 @@ proxmox-infra/
 3. **cloud-init** bootstraps VM access (SSH keys, user)
 4. **Ansible** configures VMs (guest OS configuration)
 
+## Service Roles vs Base Roles
+
+### Base Roles (Always Applied)
+
+**Purpose**: Essential infrastructure and security configuration
+- Applied to all VMs by default
+- No opt-in required
+- Examples: base packages, timezone, SSH safety, qemu-guest-agent
+
+**Characteristics:**
+- Minimal and essential
+- Safe defaults
+- No external dependencies
+- Required for VM operation
+
+### Service Roles (Optional)
+
+**Purpose**: Additional services and tools
+- Applied conditionally via variables
+- Disabled by default (opt-in)
+- Examples: Docker, monitoring agents, application runtimes
+
+**Characteristics:**
+- **Safe by default**: Disabled unless explicitly enabled
+- **Configurable**: Controlled via group_vars
+- **Reusable**: Can be enabled per-VM or per-group
+- **Isolated**: Service roles don't depend on each other
+
+### Docker Role Example
+
+**Configuration** (`group_vars/vms.yml`):
+```yaml
+docker_enabled: false  # Safe default - disabled
+docker_users: []       # Optional: users to add to docker group
+```
+
+**Usage**:
+- Set `docker_enabled: true` to enable Docker on VMs
+- Add users to `docker_users` list to grant Docker access
+- Role installs Docker Engine and docker-compose plugin
+- Idempotent and distro-aware (Debian/Ubuntu)
+
+**Why separate:**
+- Not all VMs need Docker
+- Keeps base configuration minimal
+- Allows selective service deployment
+- Easy to enable/disable per environment
+
 ## SSH Policy (Proxmox hosts)
 
 - Key-based only; password authentication disabled (LAN-only access assumed)
