@@ -14,6 +14,8 @@
   roles:
     - role: docker
       when: docker_enabled | bool
+    - role: prometheus
+      when: prometheus_enabled | bool
 
   pre_tasks:
     - name: Update package cache (keeps installs fast and current)

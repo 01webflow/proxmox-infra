@@ -16,3 +16,6 @@ vm_base_packages:
 docker_enabled: false  # Set to true to enable Docker on VMs
 docker_users: []       # List of users to add to docker group (examples only)
 
+# Prometheus monitoring (optional)
+prometheus_enabled: false  # Set to true to enable Prometheus on monitoring VM
+

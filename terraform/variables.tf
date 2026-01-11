@@ -85,3 +85,28 @@ variable "cloudinit_ssh_keys" {
   ]
 }
 
+# Monitoring VM configuration
+variable "monitoring_prometheus_enabled" {
+  description = "Enable Prometheus monitoring VM"
+  type        = bool
+  default     = false
+}
+
+variable "monitoring_prometheus_cores" {
+  description = "Number of CPU cores for Prometheus VM"
+  type        = number
+  default     = 2
+}
+
+variable "monitoring_prometheus_memory" {
+  description = "Memory allocation for Prometheus VM (in MB)"
+  type        = number
+  default     = 4096
+}
+
+variable "monitoring_prometheus_disk_size" {
+  description = "Disk size for Prometheus VM (e.g., '50G')"
+  type        = string
+  default     = "50G"
+}
+
