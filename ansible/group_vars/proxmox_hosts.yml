@@ -62,3 +62,12 @@ journald_retention_note: "TODO: set SystemMaxUse/SystemKeepFree when storage pol
 # Chrony note (kept generic until servers are defined).
 chrony_note: "Define chrony servers in group_vars when sources are known (kept generic here)."
 
+# SSH authorized keys management (examples only; replace with real keys securely).
+ssh_allowed_keys:
+  - "ssh-ed25519 AAAAexampleallowedkey1 comment@example"
+  - "ssh-rsa AAAAexampleallowedkey2 comment@example"
+
+# If true, the role will replace authorized_keys with ssh_allowed_keys (removes others).
+# Default is safe (false) and only ensures allowed keys are present.
+ssh_keys_enforce: false
+

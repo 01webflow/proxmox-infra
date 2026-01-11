@@ -25,6 +25,9 @@
         msg: "Add at least one SSH public key to {{ authorized_keys_path }} before applying SSH hardening."
       when: not authorized_keys_stat.stat.exists or authorized_keys_stat.stat.size | default(0) == 0
 
+  roles:
+    - role: ssh_keys
+
   tasks:
     - name: Install essential base packages (tooling + time sync + certs)
       ansible.builtin.apt:

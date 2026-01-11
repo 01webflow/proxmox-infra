@@ -1,0 +1,38 @@
+---
+# Manage SSH authorized keys for Proxmox hosts.
+# Safe by default: does not remove existing keys unless explicitly enforced.
+
+- name: Ensure SSH directory exists with correct permissions
+  ansible.builtin.file:
+    path: "{{ authorized_keys_path | dirname }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Fail fast if enforcement requested without any allowed keys (avoid lockout)
+  ansible.builtin.fail:
+    msg: "ssh_keys_enforce=true requires ssh_allowed_keys to be defined to avoid lockout."
+  when:
+    - ssh_keys_enforce | bool
+    - (ssh_allowed_keys | length | int) == 0
+
+- name: Ensure allowed keys are present (non-enforcing)
+  ansible.posix.authorized_key:
+    user: root
+    key: "{{ item }}"
+    state: present
+    manage_dir: false
+    path: "{{ authorized_keys_path }}"
+  loop: "{{ ssh_allowed_keys }}"
+  when: not ssh_keys_enforce | bool
+
+- name: Enforce allowed keys only (replaces authorized_keys)
+  ansible.builtin.copy:
+    dest: "{{ authorized_keys_path }}"
+    owner: root
+    group: root
+    mode: "0600"
+    content: "{{ (ssh_allowed_keys | join('\n')) ~ '\n' }}"
+  when: ssh_keys_enforce | bool
+
