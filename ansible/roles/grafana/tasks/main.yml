@@ -62,6 +62,41 @@
     mode: '0644'
   notify: Restart grafana
 
+- name: Create Grafana dashboards directory
+  ansible.builtin.file:
+    path: /etc/grafana/provisioning/dashboards
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Deploy dashboard provisioning configuration
+  ansible.builtin.copy:
+    src: dashboards.yml
+    dest: /etc/grafana/provisioning/dashboards/dashboards.yml
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart grafana
+
+- name: Find dashboard JSON files
+  ansible.builtin.find:
+    paths: "{{ playbook_dir }}/../../../monitoring/grafana/dashboards"
+    patterns: "*.json"
+    file_type: file
+  register: dashboard_files
+
+- name: Deploy dashboard JSON files
+  ansible.builtin.copy:
+    src: "{{ item.path }}"
+    dest: "/etc/grafana/provisioning/dashboards/{{ item.path | basename }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ dashboard_files.files }}"
+  notify: Restart grafana
+  when: dashboard_files.matched > 0
+
 - name: Ensure Grafana service is enabled and running
   ansible.builtin.service:
     name: grafana-server

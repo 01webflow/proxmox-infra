@@ -1,0 +1,170 @@
+{
+  "title": "Proxmox VE Cluster / Node Overview",
+  "tags": ["proxmox", "cluster", "vm"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "30s",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Cluster Node Status",
+      "type": "stat",
+      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+      "targets": [
+        {
+          "expr": "pve_up",
+          "legendFormat": "{{node}}",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          }
+        }
+      ],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto"
+      }
+    },
+    {
+      "id": 2,
+      "title": "VM Status",
+      "type": "stat",
+      "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+      "targets": [
+        {
+          "expr": "count(pve_vm_info{status=\"running\"})",
+          "legendFormat": "Running",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          }
+        },
+        {
+          "expr": "count(pve_vm_info{status=\"stopped\"})",
+          "legendFormat": "Stopped",
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          }
+        }
+      ],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area"
+      }
+    },
+    {
+      "id": 3,
+      "title": "VM CPU Usage",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+      "targets": [
+        {
+          "expr": "pve_vm_cpu_usage",
+          "legendFormat": "{{node}} - {{name}}",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "VM Memory Usage",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+      "targets": [
+        {
+          "expr": "pve_vm_memory_bytes",
+          "legendFormat": "{{node}} - {{name}}",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "Storage Pool Usage",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
+      "targets": [
+        {
+          "expr": "pve_storage_info",
+          "legendFormat": "{{node}} - {{storage}}",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "title": "VM Count by Node",
+      "type": "bargauge",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
+      "targets": [
+        {
+          "expr": "count by (node) (pve_vm_info)",
+          "legendFormat": "{{node}}",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          }
+        }
+      ],
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient"
+      }
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "node",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
+        "query": "label_values(pve_cluster_node_info, node)",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "includeAll": true,
+        "multi": true
+      }
+    ]
+  }
+}

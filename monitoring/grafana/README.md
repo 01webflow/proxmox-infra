@@ -59,17 +59,55 @@ The Grafana Ansible role (`ansible/roles/grafana/`):
 
 **Location**: `dashboards/`
 
-Dashboards will be added here for:
-- Proxmox host metrics (CPU, memory, disk, network)
-- VM status and resource usage
-- Storage pool utilization
-- Cluster health
+Dashboards are automatically provisioned on Grafana service start. No manual import required.
+
+### Available Dashboards
+
+1. **Node Exporter Full** (`node-exporter-full.json`)
+   - **Purpose**: Host-level metrics from Node Exporter
+   - **Metrics**:
+     - CPU usage and load average
+     - Memory usage (used/available)
+     - Disk I/O wait time
+     - Network traffic (RX/TX)
+     - Disk space usage
+   - **Variables**: `instance` (select specific Proxmox hosts)
+   - **Data Source**: Prometheus (uses datasource name, not ID)
+
+2. **Proxmox VE Cluster / Node Overview** (`proxmox-cluster-overview.json`)
+   - **Purpose**: Proxmox cluster and VM overview
+   - **Metrics**:
+     - Cluster node status
+     - VM status (running/stopped count)
+     - VM CPU usage per VM
+     - VM memory usage per VM
+     - Storage pool usage
+     - VM count by node
+   - **Variables**: `node` (select specific Proxmox nodes)
+   - **Data Source**: Prometheus (uses datasource name, not ID)
+
+### Auto-Provisioning
+
+Dashboards are automatically loaded from `/etc/grafana/provisioning/dashboards/` on Grafana service start:
+- **Folder**: `Proxmox`
+- **Overwrite**: Enabled (updates existing dashboards)
+- **Update Interval**: 10 seconds
+- **No manual import required**: Dashboards appear automatically in Grafana UI
+
+### Dashboard Features
+
+- **No hardcoded IPs**: All queries use Prometheus datasource by name
+- **Variables for filtering**: Select specific hosts/nodes via dashboard variables
+- **Read-only**: All queries are read-only PromQL queries
+- **Auto-refresh**: Dashboards refresh every 30 seconds
 
 ## Setup
 
-1. Configure Prometheus as data source in Grafana UI
-2. Import dashboards from `dashboards/` directory
-3. Dashboards use Prometheus queries (read-only)
+1. Prometheus datasource is automatically configured by Ansible role
+2. Dashboards are automatically provisioned on service start
+3. Access Grafana UI: `http://grafana-vm:3000`
+4. Navigate to Dashboards → Proxmox folder
+5. Dashboards use Prometheus queries (read-only)
 
 ## Security Notes
 

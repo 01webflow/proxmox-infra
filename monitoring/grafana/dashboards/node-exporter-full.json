@@ -1,0 +1,195 @@
+{
+  "title": "Node Exporter Full",
+  "tags": ["proxmox", "node-exporter", "host"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "30s",
+  "panels": [
+    {
+      "id": 1,
+      "title": "CPU Usage",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "targets": [
+        {
+          "expr": "100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+          "legendFormat": "{{instance}}",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Load Average",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "targets": [
+        {
+          "expr": "node_load1",
+          "legendFormat": "1m",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          }
+        },
+        {
+          "expr": "node_load5",
+          "legendFormat": "5m",
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          }
+        },
+        {
+          "expr": "node_load15",
+          "legendFormat": "15m",
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Memory Usage",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "targets": [
+        {
+          "expr": "node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes",
+          "legendFormat": "Used",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          }
+        },
+        {
+          "expr": "node_memory_MemAvailable_bytes",
+          "legendFormat": "Available",
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "Disk I/O Wait",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+      "targets": [
+        {
+          "expr": "avg by (instance) (irate(node_cpu_seconds_total{mode=\"iowait\"}[5m])) * 100",
+          "legendFormat": "{{instance}}",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "Network Traffic",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+      "targets": [
+        {
+          "expr": "rate(node_network_receive_bytes_total{device!=\"lo\"}[5m])",
+          "legendFormat": "{{instance}} - {{device}} RX",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          }
+        },
+        {
+          "expr": "rate(node_network_transmit_bytes_total{device!=\"lo\"}[5m])",
+          "legendFormat": "{{instance}} - {{device}} TX",
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "title": "Disk Space Usage",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+      "targets": [
+        {
+          "expr": "node_filesystem_size_bytes - node_filesystem_avail_bytes",
+          "legendFormat": "{{instance}} - {{mountpoint}}",
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      }
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "instance",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
+        "query": "label_values(node_cpu_seconds_total, instance)",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "includeAll": true,
+        "multi": true
+      }
+    ]
+  }
+}
