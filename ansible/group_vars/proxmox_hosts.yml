@@ -71,3 +71,10 @@ ssh_allowed_keys:
 # Default is safe (false) and only ensures allowed keys are present.
 ssh_keys_enforce: false
 
+# Admin user management (disabled by default; key-only, sudo without password).
+admin_user_enabled: false
+admin_user_name: adminuser
+admin_user_ssh_keys:
+  - "ssh-ed25519 AAAAexampleadminkey1 admin@example"
+  - "ssh-rsa AAAAexampleadminkey2 admin@example"
+

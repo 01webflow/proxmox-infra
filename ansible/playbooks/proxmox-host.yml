@@ -27,6 +27,8 @@
 
   roles:
     - role: ssh_keys
+    - role: admin_user
+      when: admin_user_enabled | bool
 
   tasks:
     - name: Install essential base packages (tooling + time sync + certs)

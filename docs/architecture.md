@@ -84,3 +84,10 @@ proxmox-infra/
 - Client keepalives enabled (300s interval, 2 attempts) to avoid stale sessions
 - X11 and agent forwarding disabled by default
 
+## Admin User Policy
+
+- Optional admin user (disabled by default) with key-only access
+- Passwordless sudo via `/etc/sudoers.d/<user>`; idempotent management
+- Root remains as fallback for LAN/console recovery and Proxmox cluster maintenance
+- Before enabling, populate example keys in `admin_user_ssh_keys` with real keys and set `admin_user_enabled: true`
+
