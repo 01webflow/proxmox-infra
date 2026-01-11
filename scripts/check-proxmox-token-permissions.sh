@@ -4,7 +4,12 @@
 
 set -e
 
-PROXMOX_HOST="${PROXMOX_HOST:-192.168.150.75}"
+if [ -z "$PROXMOX_HOST" ]; then
+    echo "Error: PROXMOX_HOST must be set"
+    echo "Example: export PROXMOX_HOST='192.168.1.100'"
+    exit 1
+fi
+
 PROXMOX_API_URL="${PROXMOX_API_URL:-https://${PROXMOX_HOST}:8006/api2/json}"
 
 if [ -z "$PROXMOX_API_TOKEN_ID" ] || [ -z "$PROXMOX_API_TOKEN_SECRET" ]; then

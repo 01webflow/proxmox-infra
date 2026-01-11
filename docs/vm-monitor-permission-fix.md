@@ -11,12 +11,12 @@ Terraform provider nõuab `VM.Monitor` õigust, aga see ei ole Proxmox CLI-s keh
 ## Sammud
 
 1. **Ava Proxmox Web UI:**
-   - URL: `https://192.168.150.75:8006`
+   - URL: `https://<PROXMOX_HOST>:8006` (asenda `<PROXMOX_HOST>` oma Proxmox serveri IP-ga)
    - Logi sisse
 
 2. **Mine API Token'ite juurde:**
    - **Datacenter** → **Permissions** → **API Tokens**
-   - Leia token: `root@pam!terraform`
+   - Leia oma Terraform token (nt. `root@pam!terraform`)
 
 3. **Lisa VM.Monitor õigus:**
    - Kliki token'i peale
@@ -29,10 +29,10 @@ Terraform provider nõuab `VM.Monitor` õigust, aga see ei ole Proxmox CLI-s keh
 4. **Testi:**
    ```bash
    cd terraform
-   export TF_VAR_proxmox_api_token_id='root@pam!terraform'
-   export TF_VAR_proxmox_api_token_secret='b5ea4bb6-b8c7-4472-9b85-86c248631297'
-   export TF_VAR_proxmox_api_url='https://192.168.150.75:8006/api2/json'
-   export TF_VAR_proxmox_node='proxmox'
+   export TF_VAR_proxmox_api_token_id='<YOUR_TOKEN_ID>'
+   export TF_VAR_proxmox_api_token_secret='<YOUR_TOKEN_SECRET>'
+   export TF_VAR_proxmox_api_url='https://<PROXMOX_HOST>:8006/api2/json'
+   export TF_VAR_proxmox_node='<PROXMOX_NODE>'
    terraform plan
    ```
 

@@ -19,7 +19,7 @@ Terraform needs the following permissions for the Proxmox API token:
 ## Creating API Token in Proxmox Web UI
 
 1. **Login to Proxmox Web UI**
-   - Navigate to: `https://192.168.150.75:8006`
+   - Navigate to: `https://<PROXMOX_HOST>:8006` (replace `<PROXMOX_HOST>` with your Proxmox server IP)
    - Login with your credentials
 
 2. **Go to API Tokens**
@@ -85,17 +85,17 @@ pvesh create /access/users/terraform@pam/token/terraform \
 Set the token in `terraform.tfvars` (not committed to git):
 
 ```hcl
-proxmox_api_url          = "https://192.168.150.75:8006/api2/json"
-proxmox_api_token_id     = "root@pam!terraform"
-proxmox_api_token_secret = "your-token-secret-here"
+proxmox_api_url          = "https://<PROXMOX_HOST>:8006/api2/json"
+proxmox_api_token_id     = "<YOUR_TOKEN_ID>"
+proxmox_api_token_secret = "<YOUR_TOKEN_SECRET>"
 ```
 
 Or via environment variables:
 
 ```bash
-export TF_VAR_proxmox_api_url="https://192.168.150.75:8006/api2/json"
-export TF_VAR_proxmox_api_token_id="root@pam!terraform"
-export TF_VAR_proxmox_api_token_secret="your-token-secret-here"
+export TF_VAR_proxmox_api_url="https://<PROXMOX_HOST>:8006/api2/json"
+export TF_VAR_proxmox_api_token_id="<YOUR_TOKEN_ID>"
+export TF_VAR_proxmox_api_token_secret="<YOUR_TOKEN_SECRET>"
 ```
 
 ## Verify Token Permissions
