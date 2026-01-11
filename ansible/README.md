@@ -18,17 +18,27 @@ This directory contains Ansible playbooks and roles for managing Proxmox infrast
 - **Access**: User SSH (injected via cloud-init)
 - **When**: After Terraform creates VMs and cloud-init bootstraps access
 
-### Inventory File
+### Inventory Options
 
-**`inventory.example.yml`** - Example inventory (copy to `inventory.yml`)
-- Contains example groups and hosts (placeholders only)
-- No real IPs, hostnames, or credentials
-- Copy to `inventory.yml` and populate with your actual hosts
+**Static Inventory** (recommended for most cases):
+- **`inventory.example.yml`** - Example inventory (copy to `inventory.yml`)
+  - Contains example groups and hosts (placeholders only)
+  - No real IPs, hostnames, or credentials
+  - Copy to `inventory.yml` and populate with your actual hosts
+- **`inventory.yml`** - Your actual inventory (not committed)
+  - Add your real Proxmox hosts and VMs here
+  - Keep secrets in Ansible Vault or environment variables
+  - This file is in `.gitignore`
+- **When to use**: Explicit control, easy to audit, no dependencies
 
-**`inventory.yml`** - Your actual inventory (not committed)
-- Add your real Proxmox hosts and VMs here
-- Keep secrets in Ansible Vault or environment variables
-- This file is in `.gitignore`
+**Dynamic Inventory** (optional, Terraform-based):
+- **`inventory/terraform.py`** - Dynamic inventory script
+  - Reads Terraform outputs to discover VMs
+  - Generates Ansible JSON inventory automatically
+  - Groups VMs under `vms` group
+- **When to use**: Many VMs, frequent changes, Terraform-managed infrastructure
+- **Requirements**: Terraform initialized, outputs available
+- **Limitation**: Requires IP addresses in Terraform outputs (or use Proxmox API)
 
 ## Workflow: VM Lifecycle
 
@@ -93,26 +103,52 @@ ansible-playbook -i inventory.yml playbooks/vm-base.yml --limit vms
 
 ## Usage Examples
 
-### Configure Proxmox Hosts
+### Static Inventory
+
+**Configure Proxmox Hosts:**
 ```bash
 ansible-playbook -i inventory.yml playbooks/proxmox-host.yml
 ```
 
-### Configure All VMs
+**Configure All VMs:**
 ```bash
 ansible-playbook -i inventory.yml playbooks/vm-base.yml --limit vms
 ```
 
-### Configure Single VM
+**Configure Single VM:**
 ```bash
 ansible-playbook -i inventory.yml playbooks/vm-base.yml --limit vm_example_1
 ```
 
-### Test Connectivity
+**Test Connectivity:**
 ```bash
 ansible -i inventory.yml proxmox_hosts -m ping
 ansible -i inventory.yml vms -m ping
 ```
+
+### Dynamic Inventory (Terraform-based)
+
+**Prerequisites:**
+1. Terraform must be initialized: `cd terraform && terraform init`
+2. Terraform outputs must be available: `terraform output -json`
+3. Update Terraform outputs with actual VM IP addresses (or use Proxmox API)
+
+**View Dynamic Inventory:**
+```bash
+ansible-inventory -i inventory/terraform.py --list
+```
+
+**Configure All VMs (from Terraform):**
+```bash
+ansible-playbook -i inventory/terraform.py playbooks/vm-base.yml --limit vms
+```
+
+**Test Connectivity:**
+```bash
+ansible -i inventory/terraform.py vms -m ping
+```
+
+**Note**: If Terraform outputs contain placeholder IPs (`<replace_with_vm_ip_or_use_proxmox_api>`), the dynamic inventory will skip those VMs. Use static inventory or update Terraform outputs with real IPs.
 
 ## Security
 
@@ -123,7 +159,7 @@ ansible -i inventory.yml vms -m ping
 
 ## Future Enhancements
 
-- Dynamic inventory from Terraform outputs (planned)
-- Integration with Proxmox API for automatic discovery
+- Proxmox API integration for automatic IP discovery
 - More granular VM configuration options
+- Inventory caching for better performance
 

@@ -154,17 +154,64 @@ This document describes the architecture and design decisions for the Proxmox in
 - Easy to audit what's in inventory
 - No risk of managing unintended VMs
 
+### Dynamic Inventory (Terraform Output)
+
+**Optional alternative to static inventory:**
+
+**How it works:**
+- Terraform outputs VM information (name, SSH user, IP address)
+- Dynamic inventory script (`ansible/inventory/terraform.py`) reads Terraform outputs
+- Generates Ansible JSON inventory automatically
+- VMs are grouped under `vms` group
+
+**When to use:**
+- **Many VMs**: Managing dozens or hundreds of VMs
+- **Frequent changes**: VMs are created/destroyed frequently
+- **Terraform-managed**: All VMs are created via Terraform
+- **Automation**: Part of automated CI/CD pipeline
+
+**When NOT to use:**
+- **Small scale**: Few VMs, static inventory is simpler
+- **Mixed sources**: VMs created manually or by other tools
+- **IP discovery needed**: Terraform outputs don't include IPs (requires Proxmox API)
+- **Explicit control needed**: Want to manually control which VMs are managed
+
+**Requirements:**
+- Terraform must be initialized (`terraform init`)
+- Terraform outputs must be available (`terraform output -json`)
+- VM IP addresses must be in Terraform outputs (or use Proxmox API for discovery)
+
+**Limitations:**
+- Requires Terraform state to be accessible
+- IP addresses must be known (DHCP requires additional discovery)
+- Less explicit than static inventory (harder to audit)
+- Static inventory remains as fallback
+
+**Usage:**
+```bash
+# View dynamic inventory
+ansible-inventory -i ansible/inventory/terraform.py --list
+
+# Use with playbooks
+ansible-playbook -i ansible/inventory/terraform.py playbooks/vm-base.yml --limit vms
+```
+
+**Note**: Static inventory (`inventory.yml`) remains the default and recommended approach. Dynamic inventory is optional and can be used alongside static inventory.
+
 ## Directory Structure
 
 ```
 proxmox-infra/
 ├── ansible/          # Configuration management (first)
-│   ├── inventory.example.yml  # Example inventory (committed)
-│   ├── inventory.yml          # Actual inventory (not committed)
+│   ├── inventory.example.yml  # Example static inventory (committed)
+│   ├── inventory.yml          # Actual static inventory (not committed)
+│   ├── inventory/
+│   │   └── terraform.py      # Dynamic inventory script (Terraform-based)
 │   ├── playbooks/             # Playbooks for hosts and VMs
 │   ├── roles/                  # Reusable roles
 │   └── group_vars/             # Group-specific variables
 ├── terraform/        # Infrastructure provisioning (second)
+│   └── main.tf       # Contains VM outputs for dynamic inventory
 └── docs/            # Documentation
 ```
 

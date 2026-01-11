@@ -73,3 +73,18 @@ resource "proxmox_vm_qemu" "example_vm" {
   }
 }
 
+# Terraform outputs for dynamic Ansible inventory
+output "vms" {
+  description = "VM information for Ansible dynamic inventory"
+  value = {
+    example_vm = {
+      name        = proxmox_vm_qemu.example_vm.name
+      ssh_user    = var.cloudinit_user
+      # Note: IP address must be obtained separately (DHCP, Proxmox API, or manual)
+      # This is a placeholder - replace with actual IP or use Proxmox API to discover
+      ansible_host = "<replace_with_vm_ip_or_use_proxmox_api>"
+    }
+  }
+  sensitive = false
+}
+
